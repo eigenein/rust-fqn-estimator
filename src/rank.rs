@@ -1,7 +1,7 @@
 //! Ranking functions re-written to accept any exact-sized iterators
 //! to avoid additional allocations for odd rows and columns.
 //!
-//! # Developer notes
+//! # Developer's notes
 //!
 //! - **The window must be sorted.** This ensures the correctness of the fast algorithm,
 //!   and eliminates the need to take absolute differences
