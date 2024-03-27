@@ -8,7 +8,7 @@ use std::ops::Sub;
 /// - The most important thing here is to get it done in `O(n)`.
 ///
 /// - The biggest problem is that I'm using the temporary buffer. I'm pretty sure,
-///   there should be a smart algorithm to select the kth-largest in a sorted `X + (-X)` matrix
+///   there should be a smart algorithm to select the _kth_-largest in a sorted `X + (-X)` matrix
 ///   in near-linear time. I spent some time digging into papers and decided to _maybe_ address it later.
 ///   At least, I'm allocating the buffer just once and use it for the entire [`crate::select::select`] call.
 pub fn pick_list<V, I>(window: I, min: V, max: V, into_buffer: &mut Vec<V>)

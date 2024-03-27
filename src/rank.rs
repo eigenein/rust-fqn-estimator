@@ -10,7 +10,7 @@
 //! - Although, the ranking functions are defined on a matrix, there is no need to store
 //!   the matrix itself. **The matrix's elements are computed on-the-fly**.
 //!   Rows are «sorted» in descending order, and columns are «sorted» in ascending order
-//!   (consider pair-wise sums of the window's elements and the same window's negated elements).
+//!   (consider pairwise sums of the window's elements and the same window's negated elements).
 //!
 //! - The reference implementation raises [the concern][1], so I'm using the definition
 //!   rather than blindly re-writing the reference implementation.
