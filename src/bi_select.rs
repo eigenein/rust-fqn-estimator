@@ -41,7 +41,7 @@ where
     let k2 = (k2 + 3) / 4;
 
     // Bi-select in the A-dash matrix and rank the candidates:
-    let (min_candidate, max_candidate) = bi_select(DashIter::new(window.clone()), k1, k2);
+    let (min_candidate, max_candidate) = bi_select(DashIter::new(window.clone(), 2), k1, k2);
     let rank_min = n * n - n_greater::<V, I>(window.clone(), min_candidate);
     let rank_max = n_greater::<V, I>(window.clone(), max_candidate);
 
