@@ -2,6 +2,7 @@ use std::ops::Sub;
 
 use either::Either;
 
+/// Lazy re-implementation of `pickL` from the reference implementation.
 pub struct LazyL<V, I>(Either<(I, V, V), Vec<V>>);
 
 impl<V, I> LazyL<V, I> {
@@ -19,6 +20,10 @@ where
     /// (the function itself is also known as `pickL()`).
     ///
     /// The most important thing here is to get it done in `O(n)`.
+    ///
+    /// # Developer's notes
+    ///
+    /// The biggest problem here is the allocation of the vector that we return.
     pub fn build(&mut self) -> &mut [V] {
         if let Either::Left((window, min, max)) = &mut self.0 {
             let mut l = Vec::new();
