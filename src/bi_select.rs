@@ -56,28 +56,28 @@ where
 
     // Bi-select in the `A-dash` matrix and rank the candidates:
     let (max_candidate, min_candidate) = bi_select(full_window, k1_dash, k2_dash, step * 2);
-    debug_assert!(min_candidate <= max_candidate);
-    let rank_min = n_greater(window.clone(), min_candidate);
-    let rank_max = n_smaller(window.clone(), max_candidate);
+    debug_assert!(min_candidate <= max_candidate); // b <= a
+    let rank_max = n_smaller(window.clone(), max_candidate); // ra-
+    let rank_min = n_greater(window.clone(), min_candidate); // rb+
 
     // We may not need the `L`, hence the lazy wrapper.
     let mut lazy_l = LazyL::new(window, min_candidate, max_candidate);
 
     #[allow(clippy::suspicious_operation_groupings)]
     (
-        if rank_min < k1 {
+        if rank_max < k1 {
             max_candidate
-        } else if k1 + rank_max <= n * n {
+        } else if k1 + rank_min <= n * n {
             min_candidate
         } else {
-            select_nth(lazy_l.build(), k1 + rank_max - n * n - 1)
+            select_nth(lazy_l.build(), k1 + rank_min - n * n - 1)
         },
-        if rank_min < k2 {
+        if rank_max < k2 {
             max_candidate
-        } else if k2 + rank_max <= n * n {
+        } else if k2 + rank_min <= n * n {
             min_candidate
         } else {
-            select_nth(lazy_l.build(), k2 + rank_max - n * n - 1)
+            select_nth(lazy_l.build(), k2 + rank_min - n * n - 1)
         },
     )
 }
