@@ -45,19 +45,21 @@ impl<V, I: ExactSizeIterator<Item = V>> ExactSizeIterator for DashIter<V, I> {
             // Count subsequent elements every `step`:
             count - 1
             // Round up to the closest integer to account for the possible last element:
-            + self.step - 1
+            + self.step
+                - 1
         ) / self.step
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::iter;
     use super::*;
 
     /// Test the corner case with just one element.
     #[test]
     fn dash_iter_one_ok() {
-        let dash_iter = DashIter::new([1].into_iter(), 2);
+        let dash_iter = DashIter::new(iter::once(1), 2);
         assert_eq!(dash_iter.len(), 1);
         assert_eq!(dash_iter.collect::<Vec<_>>(), vec![1]);
     }
@@ -112,5 +114,15 @@ mod tests {
         window = dash_iter.clone().collect();
         assert_eq!(dash_iter.len(), window.len());
         assert_eq!(window, vec![1, 16]);
+    }
+
+    #[test]
+    fn dash_iter_step_1_ok() {
+        let mut window = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+
+        let dash_iter = DashIter::new(window.into_iter(), 1);
+        window = dash_iter.clone().collect();
+        assert_eq!(dash_iter.len(), 16);
+        assert_eq!(window.len(), 16);
     }
 }
