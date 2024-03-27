@@ -34,4 +34,3 @@ missing_errors_doc = "allow"
 module_name_repetitions = "allow"
 
 [dependencies]
-either = "1.10.0"

@@ -2,7 +2,7 @@ use std::{fmt::Debug, ops::Sub};
 
 use crate::{
     dash_iter::DashIter,
-    lazy_list::LazyList,
+    pick_list::pick_list,
     rank::{n_greater, n_smaller},
 };
 
@@ -12,8 +12,9 @@ where
     I: Clone + ExactSizeIterator<Item = V>,
 {
     debug_assert!(k >= 1, "Here, Kth statistic starts at 1");
+
     // Starting with unit step, meaning the full window.
-    binary_select::<V, I>(window, k, k, 1).0
+    binary_select::<V, I>(window, k, k, 1, Vec::new()).0
 }
 
 /// # Returns
@@ -21,7 +22,13 @@ where
 /// Tuple of the `k1`-th and `k2`-th elements of the matrix derived from `window` and negated `window`.
 ///
 /// P.S. Abandon hope all ye who enter here 💀
-fn binary_select<V, I>(full_window: I, k1: usize, k2: usize, step: usize) -> (V, V)
+fn binary_select<V, I>(
+    full_window: I,
+    k1: usize,
+    k2: usize,
+    step: usize,
+    list_buffer: Vec<V>,
+) -> (V, V, Vec<V>)
 where
     V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
@@ -40,6 +47,7 @@ where
         return (
             select_trivial(window.clone(), k1),
             select_trivial(window, k2),
+            list_buffer,
         );
     }
 
@@ -58,34 +66,65 @@ where
     let k2_dash = (k2 + 3) / 4;
 
     // Bi-select in the `A-dash` matrix and rank the candidates:
-    let (max_candidate, min_candidate) = binary_select(full_window, k1_dash, k2_dash, step * 2);
+    let (max_candidate, min_candidate, mut list_buffer) =
+        binary_select(full_window, k1_dash, k2_dash, step * 2, list_buffer);
     debug_assert!(min_candidate <= max_candidate, "`b <= a` should hold");
     let rank_max = n_smaller(window.clone(), max_candidate); // ra-
     let rank_min = n_greater(window.clone(), min_candidate); // rb+
 
-    // We may not need the `L`, hence the lazy wrapper.
-    let mut list = LazyList::new(window, min_candidate, max_candidate);
+    // We may not need the `L`, and we only need to build it once, so wrap the window into the flag.
+    let mut window = Some(window);
 
-    #[allow(clippy::suspicious_operation_groupings)]
     (
-        if rank_max < k1 {
-            max_candidate
-        } else if k1 + rank_min <= n * n {
-            min_candidate
-        } else {
-            select_nth(list.build(), k1 + rank_min - n * n - 1)
-        },
-        if rank_max < k2 {
-            max_candidate
-        } else if k2 + rank_min <= n * n {
-            min_candidate
-        } else {
-            select_nth(list.build(), k2 + rank_min - n * n - 1)
-        },
+        select_statistic(
+            &mut window,
+            (min_candidate, rank_min),
+            (max_candidate, rank_max),
+            k1,
+            n,
+            &mut list_buffer,
+        ),
+        select_statistic(
+            &mut window,
+            (min_candidate, rank_min),
+            (max_candidate, rank_max),
+            k2,
+            n,
+            &mut list_buffer,
+        ),
+        list_buffer,
     )
 }
 
-/// Handle the trivial case of a 2-window (recursion basis).
+/// Convenience function to deduplicate the final selection in [`binary_select`].
+fn select_statistic<V, I>(
+    window: &mut Option<I>,
+    (min_candidate, rank_min): (V, usize),
+    (max_candidate, rank_max): (V, usize),
+    k: usize,
+    window_size: usize,
+    list_buffer: &mut Vec<V>,
+) -> V
+where
+    V: Copy + Debug + PartialOrd + Sub<V, Output = V>,
+    I: Clone + ExactSizeIterator<Item = V>,
+{
+    let n_elements = window_size * window_size;
+
+    #[allow(clippy::suspicious_operation_groupings)]
+    if rank_max < k {
+        max_candidate
+    } else if k + rank_min <= n_elements {
+        min_candidate
+    } else {
+        if let Some(window) = window.take() {
+            pick_list(window, min_candidate, max_candidate, list_buffer);
+        }
+        select_nth(list_buffer, k + rank_min - n_elements - 1)
+    }
+}
+
+/// Handle the trivial case of a 2-window (the recursion basis for [`binary_select`]).
 fn select_trivial<V, I>(mut window: I, k: usize) -> V
 where
     I: Clone + ExactSizeIterator<Item = V>,
