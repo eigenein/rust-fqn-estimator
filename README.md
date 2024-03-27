@@ -4,7 +4,7 @@ Rust implementation of the rolling «Fast _Qn_» algorithm for data streams.
 
 [![Check](https://github.com/eigenein/rust-fqn-estimator/actions/workflows/check.yaml/badge.svg)](https://github.com/eigenein/rust-fqn-estimator/actions/workflows/check.yaml)
 
-The _kth_-statistic retrieval from the pairwise differences is based on the paper[^1] of A. Mirzaian and E. Arjomandi, adapting the reference implementation from M. Cafaro and others[^2]. However, instead of using the insertion sort, the [`BTreeMap`](https://doc.rust-lang.org/stable/std/collections/struct.BTreeMap.html) is used to maintain the sorted window.
+The _kth_-statistic retrieval from the pairwise differences is based on the paper[^1] of A. Mirzaian and E. Arjomandi, adapting the reference implementation from M. Cafaro and others[^2].
 
 Scaling coefficients are taken from the Andrey Akinshin's paper[^3] on finite-sample scale estimators.
 
