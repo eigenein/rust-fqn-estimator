@@ -1,15 +1,29 @@
-use std::ops::Sub;
+use std::{fmt::Debug, ops::Sub};
+
+use crate::{dash_iter::DashIter, lazy_l::LazyL, rank::n_greater};
+
+fn select<V, I>(window: I, k: usize) -> V
+where
+    V: Copy + Debug + PartialOrd + Sub<V, Output = V>,
+    I: Clone + ExactSizeIterator<Item = V>,
+{
+    bi_select::<V, I>(window, k, k).0
+}
 
 /// # Returns
 ///
 /// Tuple of the `k1`-th and `k2`-th elements of the matrix derived from `window` and `negated` window.
 ///
 /// P.S. Abandon hope all ye who enter here 💀
-fn biselect<V>(window: &[V], k1: usize, k2: usize) -> (&V, &V) {
+fn bi_select<V, I>(mut window: I, k1: usize, k2: usize) -> (V, V)
+where
+    V: Copy + Debug + PartialOrd + Sub<V, Output = V>,
+    I: Clone + ExactSizeIterator<Item = V>,
+{
     let n = window.len();
 
     if n <= 2 {
-        return (&window[k1], &window[k2]);
+        return (window.clone().nth(k1).unwrap(), window.nth(k2).unwrap());
     }
 
     // Define k1-dash and k2-dash from the papers:
@@ -26,63 +40,67 @@ fn biselect<V>(window: &[V], k1: usize, k2: usize) -> (&V, &V) {
     // Surprisingly, here they used the same very trick they did NOT use for `k1`. Okay 🤔
     let k2 = (k2 + 3) / 4;
 
-    let (a, b) = biselect::<V>(todo!(), k1, k2);
-    todo!()
+    // Bi-select in the A-dash matrix and rank the candidates:
+    let (min_candidate, max_candidate) = bi_select(DashIter::new(window.clone()), k1, k2);
+    let rank_min = n * n - n_greater::<V, I>(window.clone(), min_candidate);
+    let rank_max = n_greater::<V, I>(window.clone(), max_candidate);
+
+    // We may not need the `L`, hence the lazy wrapper.
+    let mut lazy_l = LazyL::new(window, min_candidate, max_candidate);
+
+    #[allow(clippy::suspicious_operation_groupings)]
+    (
+        if rank_min < k1 {
+            min_candidate
+        } else if k1 + rank_max <= n * n {
+            max_candidate
+        } else {
+            select_nth(lazy_l.build(), k1 + rank_max - n * n)
+        },
+        if rank_min < k2 {
+            min_candidate
+        } else if k2 + rank_max <= n * n {
+            max_candidate
+        } else {
+            select_nth(lazy_l.build(), k2 + rank_max - n * n)
+        },
+    )
 }
 
-/// Return list of the matrix's values denoted by `L` in the papers.
+/// Select the Nth largest element from the `L` ([`PartialOrd`] adapter).
 ///
-/// The most important thing here is to get it done in `O(n)`.
+/// # Panics
 ///
-/// # Developer's notes
-///
-/// - I know, 1-letter names are bad, but I seriously do not know how to name this function.
-///
-/// - I am pretty sure this could be done without additional temporary vector, but I'm too
-///   silly to come up with a good solution. However, I try to avoid additional allocations by
-///   reusing the vector.
-fn l<'v, V, I>(window: I, min: &'v V, max: &'v V, out: &mut Vec<V>)
+/// The two elements in `L` cannot be ordered.
+fn select_nth<V>(l: &mut [V], index: usize) -> V
 where
-    V: PartialOrd<V>,
-    &'v V: Sub<&'v V, Output = V>,
-    I: Clone + ExactSizeIterator<Item = &'v V>,
+    V: Copy + Debug + PartialOrd,
 {
-    out.clear();
-
-    // This is tracking our maximum pointer.
-    let mut max_column_iter = window.clone().peekable();
-
-    for lhs in window {
-        // Update the maximum pointer: move right until a strictly smaller element is found:
-        while max_column_iter.next_if(|rhs| &(lhs - rhs) >= max).is_some() {}
-
-        // Okay, now we're holding at our first actual element (you still holding your beer? 🍺)
-        // Let's clone and push everything till the specified minimum.
-        out.extend(max_column_iter.clone().map(|rhs| lhs - rhs).take_while(|rhs| rhs > &min));
-    }
+    *l.select_nth_unstable_by(index, |lhs, rhs| {
+        lhs.partial_cmp(rhs)
+            .unwrap_or_else(|| panic!("`{lhs:?}` and `{rhs:?}` cannot be ordered"))
+    })
+    .1
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn l_ok() {
-        let mut buffer = Vec::new();
-
+    fn select_3x3_ok() {
         // Matrix:
         // 0, -1, -2
         // 1,  0, -1
         // 2,  1,  0
-        l([1, 2, 3].iter(), &-2, &2, &mut buffer);
-        assert_eq!(buffer, [0, -1, 1, 0, -1, 1, 0]);
-
-        // Zero matrix:
-        l([1, 1].iter(), &-1, &1, &mut buffer);
-        assert_eq!(buffer, [0, 0, 0, 0]);
-
-        // Zero matrix, corner case:
-        l([1, 1].iter(), &0, &0, &mut buffer);
-        assert_eq!(buffer, []);
+        let window = [1, 2, 3].into_iter();
+        assert_eq!(select(window.clone(), 0), -2);
+        assert_eq!(select(window.clone(), 1), -1);
+        assert_eq!(select(window.clone(), 2), -1);
+        assert_eq!(select(window.clone(), 3), 0);
+        assert_eq!(select(window.clone(), 4), 0);
+        assert_eq!(select(window.clone(), 5), 0);
+        assert_eq!(select(window.clone(), 6), 1);
+        assert_eq!(select(window.clone(), 7), 1);
+        assert_eq!(select(window.clone(), 8), 2);
     }
 }

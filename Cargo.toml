@@ -34,4 +34,4 @@ missing_errors_doc = "allow"
 module_name_repetitions = "allow"
 
 [dependencies]
-num-traits = "0.2.18"
+either = "1.10.0"

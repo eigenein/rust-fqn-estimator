@@ -24,11 +24,10 @@ use std::ops::Sub;
 /// Also known as `rank+` in the original papers, and `rankRightV` in the reference implementation.
 ///
 /// Note that `rank-(A, a)` is simply `n * n - n_greater(A, a)`.
-fn n_greater<'v, V, I>(window: I, guard: &'v V) -> usize
+pub fn n_greater<V, I>(window: I, guard: V) -> usize
 where
-    V: PartialOrd<V>,
-    &'v V: Sub<&'v V, Output = V>,
-    I: Clone + ExactSizeIterator<Item = &'v V>,
+    V: Copy + PartialOrd<V> + Sub<V, Output = V>,
+    I: Clone + ExactSizeIterator<Item = V>,
 {
     let window_size = window.len();
     let mut column_iter = window.clone().enumerate().peekable();
@@ -36,10 +35,7 @@ where
     window
         .map(|lhs| {
             // Move right until a smaller element is found:
-            while column_iter
-                .next_if(|(_, rhs)| &(lhs - rhs) > guard)
-                .is_some()
-            {}
+            while column_iter.next_if(|(_, rhs)| lhs - *rhs > guard).is_some() {}
 
             // Count the elements on the left, excluding the current one
             // (which is no longer less than the guard):
@@ -55,33 +51,39 @@ mod tests {
     use super::*;
 
     #[test]
-    fn n_greater_ok() {
+    fn n_greater_2x2_ok() {
         // Matrix:
         // 0, -1
         // 1,  0
-        assert_eq!(n_greater([1, 2].iter(), &-2), 4);
-        assert_eq!(n_greater([1, 2].iter(), &-1), 3);
-        assert_eq!(n_greater([1, 2].iter(), &0), 1);
-        assert_eq!(n_greater([1, 2].iter(), &1), 0);
+        let window = [1, 2].into_iter();
+        assert_eq!(n_greater(window.clone(), -2), 4);
+        assert_eq!(n_greater(window.clone(), -1), 3);
+        assert_eq!(n_greater(window.clone(), 0), 1);
+        assert_eq!(n_greater(window, 1), 0);
+    }
 
+    #[test]
+    fn n_greater_3x3_ok() {
         // Matrix:
         // 0, -1, -1
         // 1,  0,  0
         // 1,  0,  0
-        assert_eq!(n_greater([1, 2, 2].iter(), &-2), 9);
-        assert_eq!(n_greater([1, 2, 2].iter(), &-1), 7);
-        assert_eq!(n_greater([1, 2, 2].iter(), &0), 2);
-        assert_eq!(n_greater([1, 2, 2].iter(), &1), 0);
+        let window = [1, 2, 2].into_iter();
+        assert_eq!(n_greater(window.clone(), -2), 9);
+        assert_eq!(n_greater(window.clone(), -1), 7);
+        assert_eq!(n_greater(window.clone(), 0), 2);
+        assert_eq!(n_greater(window, 1), 0);
 
         // Matrix:
         // 0, -1, -2
         // 1,  0, -1
         // 2,  1,  0
-        assert_eq!(n_greater([1, 2, 3].iter(), &-3), 9);
-        assert_eq!(n_greater([1, 2, 3].iter(), &-2), 8);
-        assert_eq!(n_greater([1, 2, 3].iter(), &-1), 6);
-        assert_eq!(n_greater([1, 2, 3].iter(), &0), 3);
-        assert_eq!(n_greater([1, 2, 3].iter(), &1), 1);
-        assert_eq!(n_greater([1, 2, 3].iter(), &2), 0);
+        let window = [1, 2, 3].into_iter();
+        assert_eq!(n_greater(window.clone(), -3), 9);
+        assert_eq!(n_greater(window.clone(), -2), 8);
+        assert_eq!(n_greater(window.clone(), -1), 6);
+        assert_eq!(n_greater(window.clone(), 0), 3);
+        assert_eq!(n_greater(window.clone(), 1), 1);
+        assert_eq!(n_greater(window, 2), 0);
     }
 }
