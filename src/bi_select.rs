@@ -1,11 +1,14 @@
 use std::{fmt::Debug, ops::Sub};
 
-use crate::{dash_iter::DashIter, lazy_l::LazyL, rank::n_greater};
-use crate::rank::n_smaller;
+use crate::{
+    dash_iter::DashIter,
+    lazy_l::LazyL,
+    rank::{n_greater, n_smaller},
+};
 
 fn select<V, I>(window: I, k: usize) -> V
 where
-    V: Copy + Debug + PartialOrd + Sub<V, Output = V>,
+    V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
 {
     debug_assert!(k >= 1, "Here, Kth statistic starts at 1");
@@ -20,7 +23,7 @@ where
 /// P.S. Abandon hope all ye who enter here 💀
 fn bi_select<V, I>(full_window: I, k1: usize, k2: usize, step: usize) -> (V, V)
 where
-    V: Copy + Debug + PartialOrd + Sub<V, Output = V>,
+    V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
 {
     // Current `A` matrix:
@@ -86,15 +89,14 @@ where
 fn select_trivial<V, I>(mut window: I, k: usize) -> V
 where
     I: Clone + ExactSizeIterator<Item = V>,
-    V: Copy + Sub<V, Output = V>,
+    V: Copy + Default + Sub<V, Output = V>,
 {
     debug_assert_eq!(window.len(), 2);
     let item_1 = window.next().unwrap();
     let item_2 = window.next().unwrap();
     match k {
         1 => item_1 - item_2, // non-positive
-        2 => item_1 - item_1, // TODO: use default
-        3 => item_2 - item_2,
+        2 | 3 => V::default(),
         4 => item_2 - item_1, // non-negative
         _ => panic!("`k` should be in `1..=4` but it is `{k}`"),
     }
