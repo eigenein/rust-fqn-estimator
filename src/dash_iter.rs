@@ -1,6 +1,6 @@
 /// A-dash array iterator of the specified step.
 ///
-/// Step is a multiple of `2` and corresponds to the [`crate::bi_select::bi_select`] call depth.
+/// Step is a multiple of `2` and corresponds to the [`crate::select::bi_select`] call depth.
 #[derive(Copy, Clone)]
 pub struct DashIter<V, I> {
     inner: I,

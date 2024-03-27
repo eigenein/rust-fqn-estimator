@@ -1,4 +1,4 @@
-mod bi_select;
 mod dash_iter;
-mod lazy_l;
+mod lazy_list;
 mod rank;
+mod select;

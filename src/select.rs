@@ -2,7 +2,7 @@ use std::{fmt::Debug, ops::Sub};
 
 use crate::{
     dash_iter::DashIter,
-    lazy_l::LazyL,
+    lazy_list::LazyList,
     rank::{n_greater, n_smaller},
 };
 
@@ -13,7 +13,7 @@ where
 {
     debug_assert!(k >= 1, "Here, Kth statistic starts at 1");
     // Starting with unit step, meaning the full window.
-    bi_select::<V, I>(window, k, k, 1).0
+    binary_select::<V, I>(window, k, k, 1).0
 }
 
 /// # Returns
@@ -21,7 +21,7 @@ where
 /// Tuple of the `k1`-th and `k2`-th elements of the matrix derived from `window` and negated `window`.
 ///
 /// P.S. Abandon hope all ye who enter here 💀
-fn bi_select<V, I>(full_window: I, k1: usize, k2: usize, step: usize) -> (V, V)
+fn binary_select<V, I>(full_window: I, k1: usize, k2: usize, step: usize) -> (V, V)
 where
     V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
@@ -58,13 +58,13 @@ where
     let k2_dash = (k2 + 3) / 4;
 
     // Bi-select in the `A-dash` matrix and rank the candidates:
-    let (max_candidate, min_candidate) = bi_select(full_window, k1_dash, k2_dash, step * 2);
+    let (max_candidate, min_candidate) = binary_select(full_window, k1_dash, k2_dash, step * 2);
     debug_assert!(min_candidate <= max_candidate); // b <= a
     let rank_max = n_smaller(window.clone(), max_candidate); // ra-
     let rank_min = n_greater(window.clone(), min_candidate); // rb+
 
     // We may not need the `L`, hence the lazy wrapper.
-    let mut lazy_l = LazyL::new(window, min_candidate, max_candidate);
+    let mut lazy_l = LazyList::new(window, min_candidate, max_candidate);
 
     #[allow(clippy::suspicious_operation_groupings)]
     (

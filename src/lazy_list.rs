@@ -3,15 +3,15 @@ use std::ops::Sub;
 use either::Either;
 
 /// Lazy re-implementation of `pickL` from the reference implementation.
-pub struct LazyL<V, I>(Either<(I, V, V), Vec<V>>);
+pub struct LazyList<V, I>(Either<(I, V, V), Vec<V>>);
 
-impl<V, I> LazyL<V, I> {
+impl<V, I> LazyList<V, I> {
     pub const fn new(window: I, min: V, max: V) -> Self {
         Self(Either::Left((window, min, max)))
     }
 }
 
-impl<V, I> LazyL<V, I>
+impl<V, I> LazyList<V, I>
 where
     I: Clone + Iterator<Item = V>,
     V: Copy + PartialOrd + Sub<V, Output = V>,
@@ -63,27 +63,27 @@ mod tests {
     /// 2,  1,  0
     /// ```
     #[test]
-    fn lazy_l_3x3_ok() {
+    fn lazy_list_3x3_ok() {
         let window = [1, 2, 3].into_iter();
 
-        let mut lazy_l = LazyL::new(window.clone(), -1, 1);
+        let mut lazy_l = LazyList::new(window.clone(), -1, 1);
         assert_eq!(lazy_l.build(), [0, 0, 0]);
 
-        let mut lazy_l = LazyL::new(window.clone(), -2, 2);
+        let mut lazy_l = LazyList::new(window.clone(), -2, 2);
         assert_eq!(lazy_l.build(), [0, -1, 1, 0, -1, 1, 0]);
 
-        let mut lazy_l = LazyL::new(window, -3, 3);
+        let mut lazy_l = LazyList::new(window, -3, 3);
         assert_eq!(lazy_l.build(), [0, -1, -2, 1, 0, -1, 2, 1, 0]);
     }
 
     #[test]
-    fn lazy_l_2x2_zero_ok() {
+    fn lazy_list_2x2_zero_ok() {
         // Zero matrix:
-        let mut lazy_l = LazyL::new([1, 1].into_iter(), -1, 1);
+        let mut lazy_l = LazyList::new([1, 1].into_iter(), -1, 1);
         assert_eq!(lazy_l.build(), [0, 0, 0, 0]);
 
         // Zero matrix, corner case:
-        let mut lazy_l = LazyL::new([1, 1].into_iter(), 0, 0);
+        let mut lazy_l = LazyList::new([1, 1].into_iter(), 0, 0);
         assert_eq!(lazy_l.build(), []);
     }
 }
