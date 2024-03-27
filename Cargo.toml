@@ -29,8 +29,6 @@ nursery = "warn"
 pedantic = "warn"
 
 # Individual flags:
-future_not_send = "allow"
-missing_errors_doc = "allow"
 module_name_repetitions = "allow"
 
 [dependencies]
