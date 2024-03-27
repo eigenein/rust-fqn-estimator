@@ -54,6 +54,7 @@ impl<V, I: ExactSizeIterator<Item = V>> ExactSizeIterator for DashIter<V, I> {
 #[cfg(test)]
 mod tests {
     use std::iter;
+
     use super::*;
 
     /// Test the corner case with just one element.

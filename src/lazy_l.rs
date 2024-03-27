@@ -15,7 +15,8 @@ where
     I: Clone + Iterator<Item = V>,
     V: Copy + PartialOrd + Sub<V, Output = V>,
 {
-    /// Build the list denoted by `L` in the papers.
+    /// Build the list denoted by `L` in the papers
+    /// (the function itself is also known as `pickL()`).
     ///
     /// The most important thing here is to get it done in `O(n)`.
     pub fn build(&mut self) -> &mut [V] {
@@ -49,14 +50,25 @@ where
 mod tests {
     use super::*;
 
+    /// # Matrix
+    ///
+    /// ```text
+    /// 0, -1, -2
+    /// 1,  0, -1
+    /// 2,  1,  0
+    /// ```
     #[test]
     fn lazy_l_3x3_ok() {
-        // Matrix:
-        // 0, -1, -2
-        // 1,  0, -1
-        // 2,  1,  0
-        let mut lazy_l = LazyL::new([1, 2, 3].into_iter(), -2, 2);
+        let window = [1, 2, 3].into_iter();
+
+        let mut lazy_l = LazyL::new(window.clone(), -1, 1);
+        assert_eq!(lazy_l.build(), [0, 0, 0]);
+
+        let mut lazy_l = LazyL::new(window.clone(), -2, 2);
         assert_eq!(lazy_l.build(), [0, -1, 1, 0, -1, 1, 0]);
+
+        let mut lazy_l = LazyL::new(window, -3, 3);
+        assert_eq!(lazy_l.build(), [0, -1, -2, 1, 0, -1, 2, 1, 0]);
     }
 
     #[test]

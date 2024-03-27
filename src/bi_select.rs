@@ -1,6 +1,7 @@
 use std::{fmt::Debug, ops::Sub};
 
 use crate::{dash_iter::DashIter, lazy_l::LazyL, rank::n_greater};
+use crate::rank::n_smaller;
 
 fn select<V, I>(window: I, k: usize) -> V
 where
@@ -28,7 +29,7 @@ where
 
     debug_assert!(
         (n * n >= k1) && (k1 >= k2) && (k2 >= 1) && (k1 - k2 <= 4 * n - 4),
-        "Lemma 5.1 (Mirzaian & Arjomandi) should hold, but: n = {n}, k1 = {k1}, k2 = {k2}"
+        "lemma 5.1 (Mirzaian & Arjomandi) should hold, but: n = {n}, k1 = {k1}, k2 = {k2}"
     );
 
     debug_assert!(n >= 2);
@@ -40,7 +41,7 @@ where
     }
 
     // Define k1-dash and k2-dash from the papers:
-    let k1 = if n & 1 == 0 {
+    let k1_dash = if n & 1 == 0 {
         // Original paper mentions `ceil(k1 / 4)`, which is simply `floor((k1 + 3) / 4)`
         // (just consider all the possible remainders of 4).
         n + 1 + (k1 + 3) / 4
@@ -51,13 +52,13 @@ where
     };
 
     // Surprisingly, here they used the same very trick they did NOT use for `k1`. Okay 🤔
-    let k2 = (k2 + 3) / 4;
+    let k2_dash = (k2 + 3) / 4;
 
     // Bi-select in the `A-dash` matrix and rank the candidates:
-    let (max_candidate, min_candidate) = bi_select(full_window, k1, k2, step * 2);
+    let (max_candidate, min_candidate) = bi_select(full_window, k1_dash, k2_dash, step * 2);
     debug_assert!(min_candidate <= max_candidate);
-    let rank_min = n * n - n_greater(window.clone(), min_candidate);
-    let rank_max = n_greater(window.clone(), max_candidate);
+    let rank_min = n_greater(window.clone(), min_candidate);
+    let rank_max = n_smaller(window.clone(), max_candidate);
 
     // We may not need the `L`, hence the lazy wrapper.
     let mut lazy_l = LazyL::new(window, min_candidate, max_candidate);
@@ -65,22 +66,23 @@ where
     #[allow(clippy::suspicious_operation_groupings)]
     (
         if rank_min < k1 {
-            min_candidate
-        } else if k1 + rank_max <= n * n {
             max_candidate
+        } else if k1 + rank_max <= n * n {
+            min_candidate
         } else {
             select_nth(lazy_l.build(), k1 + rank_max - n * n - 1)
         },
         if rank_min < k2 {
-            min_candidate
-        } else if k2 + rank_max <= n * n {
             max_candidate
+        } else if k2 + rank_max <= n * n {
+            min_candidate
         } else {
             select_nth(lazy_l.build(), k2 + rank_max - n * n - 1)
         },
     )
 }
 
+/// Handle the trivial case of a 2-window (recursion basis).
 fn select_trivial<V, I>(mut window: I, k: usize) -> V
 where
     I: Clone + ExactSizeIterator<Item = V>,
@@ -107,6 +109,7 @@ fn select_nth<V>(l: &mut [V], index: usize) -> V
 where
     V: Copy + Debug + PartialOrd,
 {
+    debug_assert!(index < l.len(), "out of range: l = {l:?}, index = {index}");
     *l.select_nth_unstable_by(index, |lhs, rhs| {
         lhs.partial_cmp(rhs)
             .unwrap_or_else(|| panic!("`{lhs:?}` and `{rhs:?}` cannot be ordered"))
@@ -118,24 +121,48 @@ where
 mod tests {
     use super::*;
 
+    /// # Matrix
+    ///
+    /// ```text
+    /// 0 -1
+    /// 1  0
+    /// ```
     #[test]
     fn select_2x2_ok() {
-        // Matrix:
-        // 0 -1
-        // 1  0
         let window = [1, 2].into_iter();
         let statistics: Vec<_> = (1..=4).map(|k| select(window.clone(), k)).collect();
         assert_eq!(statistics, [-1, 0, 0, 1]);
     }
 
+    /// # Matrix
+    ///
+    /// ```text
+    /// 0, -1, -2
+    /// 1,  0, -1
+    /// 2,  1,  0
+    /// ```
     #[test]
     fn select_3x3_ok() {
-        // Matrix:
-        // 0, -1, -2
-        // 1,  0, -1
-        // 2,  1,  0
         let window = [1, 2, 3].into_iter();
         let statistics: Vec<_> = (1..=9).map(|k| select(window.clone(), k)).collect();
         assert_eq!(statistics, [-2, -1, -1, 0, 0, 0, 1, 1, 2]);
+    }
+
+    /// # Matrix
+    ///
+    /// ```text
+    /// 0, -1, -2, -3
+    /// 1,  0, -1, -2
+    /// 2,  1,  0, -1
+    /// 3,  2,  1,  0
+    /// ```
+    #[test]
+    fn select_4x4_ok() {
+        let window = [1, 2, 3, 4].into_iter();
+        let statistics: Vec<_> = (1..=16).map(|k| select(window.clone(), k)).collect();
+        assert_eq!(
+            statistics,
+            [-3, -2, -2, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3]
+        );
     }
 }
