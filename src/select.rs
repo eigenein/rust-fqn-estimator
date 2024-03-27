@@ -6,7 +6,10 @@ use crate::{
     rank::{n_greater, n_smaller},
 };
 
-fn select<V, I>(window: I, k: usize) -> V
+/// Main result of this module: select kth statistic of the virtual `X + (-X)` matrix.
+///
+/// **Note, that `k` starts from `1`.**
+fn select_kth_statistic<V, I>(window: I, k: usize) -> V
 where
     V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
@@ -171,7 +174,7 @@ mod tests {
     #[test]
     fn select_2x2_ok() {
         let window = [1, 2].into_iter();
-        let statistics: Vec<_> = (1..=4).map(|k| select(window.clone(), k)).collect();
+        let statistics: Vec<_> = (1..=4).map(|k| select_kth_statistic(window.clone(), k)).collect();
         assert_eq!(statistics, [-1, 0, 0, 1]);
     }
 
@@ -185,7 +188,7 @@ mod tests {
     #[test]
     fn select_3x3_ok() {
         let window = [1, 2, 3].into_iter();
-        let statistics: Vec<_> = (1..=9).map(|k| select(window.clone(), k)).collect();
+        let statistics: Vec<_> = (1..=9).map(|k| select_kth_statistic(window.clone(), k)).collect();
         assert_eq!(statistics, [-2, -1, -1, 0, 0, 0, 1, 1, 2]);
     }
 
@@ -200,7 +203,7 @@ mod tests {
     #[test]
     fn select_4x4_ok() {
         let window = [1, 2, 3, 4].into_iter();
-        let statistics: Vec<_> = (1..=16).map(|k| select(window.clone(), k)).collect();
+        let statistics: Vec<_> = (1..=16).map(|k| select_kth_statistic(window.clone(), k)).collect();
         assert_eq!(
             statistics,
             [-3, -2, -2, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3]
@@ -219,7 +222,7 @@ mod tests {
     #[test]
     fn select_5x5_ok() {
         let window = [1, 2, 3, 4, 5].into_iter();
-        let statistics: Vec<_> = (1..=25).map(|k| select(window.clone(), k)).collect();
+        let statistics: Vec<_> = (1..=25).map(|k| select_kth_statistic(window.clone(), k)).collect();
         assert_eq!(
             statistics,
             [
