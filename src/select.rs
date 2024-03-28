@@ -172,7 +172,7 @@ mod tests {
     /// 1  0
     /// ```
     #[test]
-    fn select_2x2_ok() {
+    fn matrix_2x2_ok() {
         let window = [1, 2].into_iter();
         let statistics: Vec<_> = (1..=4)
             .map(|k| select_kth_statistic(window.clone(), k))
@@ -188,7 +188,7 @@ mod tests {
     /// 2,  1,  0
     /// ```
     #[test]
-    fn select_3x3_ok() {
+    fn matrix_3x3_ok() {
         let window = [1, 2, 3].into_iter();
         let statistics: Vec<_> = (1..=9)
             .map(|k| select_kth_statistic(window.clone(), k))
@@ -205,7 +205,7 @@ mod tests {
     /// 3,  2,  1,  0
     /// ```
     #[test]
-    fn select_4x4_ok() {
+    fn matrix_4x4_ok() {
         let window = [1, 2, 3, 4].into_iter();
         let statistics: Vec<_> = (1..=16)
             .map(|k| select_kth_statistic(window.clone(), k))
@@ -226,7 +226,7 @@ mod tests {
     /// 4,  3,  2,  1,  0
     /// ```
     #[test]
-    fn select_5x5_ok() {
+    fn matrix_5x5_ok() {
         let window = [1, 2, 3, 4, 5].into_iter();
         let statistics: Vec<_> = (1..=25)
             .map(|k| select_kth_statistic(window.clone(), k))

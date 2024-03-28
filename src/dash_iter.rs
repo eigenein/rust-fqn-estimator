@@ -59,14 +59,14 @@ mod tests {
 
     /// Test the corner case with just one element.
     #[test]
-    fn dash_iter_one_ok() {
+    fn one_ok() {
         let dash_iter = DashIter::new(iter::once(1), 2);
         assert_eq!(dash_iter.len(), 1);
         assert_eq!(dash_iter.collect::<Vec<_>>(), vec![1]);
     }
 
     #[test]
-    fn dash_iter_multiple_ok() {
+    fn multiple_ok() {
         let mut window = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
         // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
@@ -99,7 +99,7 @@ mod tests {
     }
 
     #[test]
-    fn dash_iter_non_multiple_ok() {
+    fn non_multiple_ok() {
         let mut window = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
         // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
@@ -118,7 +118,7 @@ mod tests {
     }
 
     #[test]
-    fn dash_iter_step_1_ok() {
+    fn step_1_ok() {
         let mut window = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
         let dash_iter = DashIter::new(window.into_iter(), 1);

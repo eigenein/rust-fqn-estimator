@@ -47,7 +47,7 @@ mod tests {
     /// 2,  1,  0
     /// ```
     #[test]
-    fn pick_list_3x3_ok() {
+    fn matrix_3x3_ok() {
         let window = [1, 2, 3].into_iter();
         let mut buffer = Vec::new();
 
@@ -62,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    fn pick_list_2x2_zero_ok() {
+    fn matrix_2x2_zero_ok() {
         let mut buffer = Vec::new();
 
         // Zero matrix:

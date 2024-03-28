@@ -80,7 +80,7 @@ mod tests {
     /// 1,  0
     /// ```
     #[test]
-    fn rank_2x2_ok() {
+    fn matrix_2x2_ok() {
         let window = [1, 2].into_iter();
 
         assert_eq!(n_greater(window.clone(), -2), 4);
@@ -102,7 +102,7 @@ mod tests {
     /// 1,  0,  0
     /// ```
     #[test]
-    fn rank_3x3_with_repetitions_ok() {
+    fn matrix_3x3_with_repetitions_ok() {
         let window = [1, 2, 2].into_iter();
 
         assert_eq!(n_greater(window.clone(), -2), 9);
@@ -124,7 +124,7 @@ mod tests {
     /// 2,  1,  0
     /// ```
     #[test]
-    fn rank_3x3_ok() {
+    fn matrix_3x3_ok() {
         let window = [1, 2, 3].into_iter();
 
         assert_eq!(n_greater(window.clone(), -3), 9);
