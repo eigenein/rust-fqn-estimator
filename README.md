@@ -8,7 +8,7 @@ The _kth_-statistic retrieval from the pairwise differences is based on the pape
 
 Scaling coefficients are taken from the Andrey Akinshin's paper[^3] on finite-sample scale estimators.
 
-[^1]: Selection in `X + Y` and matrices with sorted rows and columns (A. Mirzaian, E. Arjomandi): <https://doi.org/10.1016/0020-0190(85)90123-1>.
-[^2]: Fast Detection of Outliers in Data Streams with the `Qn` Estimator (Massimo Cafaro, Catiuscia Melle, Marco Pulimeno, Italo Epicoco): [arXiv:1910.02459](https://doi.org/10.48550/arXiv.1910.02459), [reference implementation](https://github.com/cafaro/FQN).
+[^1]: [Selection in `X + Y` and matrices with sorted rows and columns](https://doi.org/10.1016/0020-0190(85)90123-1) (A. Mirzaian, E. Arjomandi).
+[^2]: [Fast Detection of Outliers in Data Streams with the `Qn` Estimator](https://doi.org/10.48550/arXiv.1910.02459) (Massimo Cafaro, Catiuscia Melle, Marco Pulimeno, Italo Epicoco), [reference implementation](https://github.com/cafaro/FQN).
 [^3]: Finite-sample Rousseeuw-Croux scale estimators (Andrey Akinshin): [arXiv:2209.12268](https://doi.org/10.48550/arXiv.2209.12268).
 π
