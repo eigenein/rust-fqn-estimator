@@ -14,6 +14,7 @@ where
     V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
 {
+    #[cfg_attr(coverage, coverage(off))]
     debug_assert!(k >= 1, "Here, kth order statistic starts at 1");
 
     // Starting with unit step, meaning the full window.
