@@ -6,7 +6,7 @@ use crate::{
     rank::{n_greater, n_smaller},
 };
 
-/// Main result of this module: select _kth_-statistic of the virtual `X + (-X)` matrix.
+/// Main result of this module: select _k_-th order statistic of the virtual `X + (-X)` matrix.
 ///
 /// **Note, that `k` starts from `1`.**
 fn select_kth_statistic<V, I>(window: I, k: usize) -> V
@@ -14,7 +14,7 @@ where
     V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
 {
-    debug_assert!(k >= 1, "Here, kth statistic starts at 1");
+    debug_assert!(k >= 1, "Here, kth order statistic starts at 1");
 
     // Starting with unit step, meaning the full window.
     binary_select::<V, I>(window, k, k, 1, Vec::new()).0
