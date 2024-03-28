@@ -32,3 +32,4 @@ pedantic = "warn"
 module_name_repetitions = "allow"
 
 [dependencies]
+rotated-vec = "0.1.1"
