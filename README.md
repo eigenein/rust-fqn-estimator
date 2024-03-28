@@ -10,7 +10,7 @@ The _kth_-statistic retrieval from the pairwise differences is based on the pape
 [^2]: GitHub: [cafaro/FQN](https://github.com/cafaro/FQN) (Massimo Cafaro)
 [^3]: DOI: [Fast Detection of Outliers in Data Streams with the `Qn` Estimator](https://doi.org/10.48550/arXiv.1910.02459) (Massimo Cafaro, Catiuscia Melle, Marco Pulimeno, Italo Epicoco)
 
-Instead of using the insertion sort[^2][^3], I use a «2-level rotated array»[^4] to maintain the sorted window, that costs $`O(n + sqrt{n})`$ space, $`O(sqrt{n})`$ time for inserts and deletes, and $`O(\log n)`$ time for accessing the median.
+Instead of using the insertion sort[^2][^3], I use a «2-level rotated array»[^4] to maintain the sorted window, that costs $`O(n + sqrt {n})`$ space, $`O(sqrt {n})`$ time for inserts and deletes, and $`O(\log n)`$ time for accessing the median.
 
 $`Q_n`$ scaling coefficients are taken from the Andrey Akinshin's paper[^5] on finite-sample scale estimators.
 
