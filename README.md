@@ -12,9 +12,6 @@ The $`k`$th order statistic retrieval from the pairwise differences is based on 
 [^2]: GitHub: [cafaro/FQN](https://github.com/cafaro/FQN) (Massimo Cafaro)
 [^3]: DOI: [Fast Detection of Outliers in Data Streams with the `Qn` Estimator](https://doi.org/10.48550/arXiv.1910.02459) (Massimo Cafaro, Catiuscia Melle, Marco Pulimeno, Italo Epicoco)
 
-Instead of using the insertion sort[^2][^3], I use a «2-level rotated array»[^4] to maintain the sorted window, that costs $`O(n + \sqrt{n})`$ space, $`O(\sqrt{n})`$ time for inserts and deletes, and $`O(\log n)`$ time for accessing the median.
+$`Q_n`$ scaling coefficients are taken from the paper[^4] on finite-sample scale estimators.
 
-$`Q_n`$ scaling coefficients are taken from the paper[^5] on finite-sample scale estimators.
-
-[^4]: GitHub: [senderista/rotated-array-set](https://github.com/senderista/rotated-array-set) (Tobin Baker)
-[^5]: DOI: [Finite-sample Rousseeuw-Croux scale estimators](https://doi.org/10.48550/arXiv.2209.12268) (Andrey Akinshin)
+[^4]: DOI: [Finite-sample Rousseeuw-Croux scale estimators](https://doi.org/10.48550/arXiv.2209.12268) (Andrey Akinshin)
