@@ -27,7 +27,7 @@ impl<K: Copy + Ord, const B: usize> Multiset<K, B> {
             // Split the root first:
             let (median, sibling) = self.0.split_off();
 
-            // The former root becomes a child of the new root:;
+            // The former root becomes a child of the new root:
             self.0 = Node {
                 keys: vec![median],
 
@@ -132,30 +132,53 @@ impl<K: Copy + Ord, const B: usize> Node<K, B> {
 }
 
 #[cfg(test)]
+impl<K, const B: usize> std::ops::Index<usize> for Node<K, B> {
+    type Output = Self;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.children[index]
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn insert_ok() {
-        let mut set = Multiset::<_, 1>::default();
+        let mut set = Multiset::<_, 2>::default();
 
-        // First element:
-        set.insert(42);
-        assert_eq!(set.0.keys, [42]);
+        // Initial elements:
+        set.insert(7);
+        set.insert(6);
+        set.insert(8);
+        assert_eq!(set.0.keys, [6, 7, 8]);
         assert!(set.0.is_leaf());
 
-        // Here, a split should occur:
-        set.insert(43);
-        assert_eq!(set.0.keys, [42]);
-        assert_eq!(set.0.children[0].keys, []);
-        assert!(set.0.children[0].is_leaf());
-        assert_eq!(set.0.children[1].keys, [43]);
-        assert!(set.0.children[1].is_leaf());
+        // Split:
+        set.insert(5);
+        assert_eq!(set.0.keys, [7]);
+        assert_eq!(set.0[0].keys, [5, 6]);
+        assert!(set.0[0].is_leaf());
+        assert_eq!(set.0[1].keys, [8]);
+        assert!(set.0[1].is_leaf());
 
-        // No split, just insert to the left child:
-        set.insert(42);
-        assert_eq!(set.0.keys, [42]);
-        assert_eq!(set.0.children[0].keys, [42]);
-        assert_eq!(set.0.children[1].keys, [43]);
+        // Add more:
+        set.insert(4);
+        assert_eq!(set.0.keys, [7]);
+        assert_eq!(set.0[0].keys, [4, 5, 6]);
+        assert!(set.0[0].is_leaf());
+        assert_eq!(set.0[1].keys, [8]);
+        assert!(set.0[1].is_leaf());
+
+        // Split again:
+        set.insert(3);
+        assert_eq!(set.0.keys, [5, 7]);
+        assert_eq!(set.0[0].keys, [3, 4]);
+        assert!(set.0[0].is_leaf());
+        assert_eq!(set.0[1].keys, [6]);
+        assert!(set.0[1].is_leaf());
+        assert_eq!(set.0[2].keys, [8]);
+        assert!(set.0[2].is_leaf());
     }
 }
