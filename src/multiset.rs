@@ -9,6 +9,7 @@ use std::mem;
 /// - `K`: key type
 /// - `B`: tree's degree, defaults to `6` in consistency with [`std::collections::BTreeSet`].
 #[must_use]
+#[derive(Debug)]
 pub struct Multiset<K, const B: usize = 6>(
     /// Root node.
     Node<K, B>,
@@ -29,6 +30,8 @@ impl<K: Copy + Ord, const B: usize> Multiset<K, B> {
             // The former root becomes a child of the new root:;
             self.0 = Node {
                 keys: vec![median],
+
+                // FIXME: I don't like the temporary allocation here.
                 children: vec![mem::take(&mut self.0), sibling],
             };
         }
@@ -38,6 +41,7 @@ impl<K: Copy + Ord, const B: usize> Multiset<K, B> {
 }
 
 #[must_use]
+#[derive(Debug)]
 struct Node<K, const B: usize> {
     keys: Vec<K>,
     children: Vec<Self>,
@@ -49,6 +53,7 @@ impl<K, const B: usize> Node<K, B> {
 }
 
 impl<K, const B: usize> Default for Node<K, B> {
+    /// Build an empty leaf and ensure its underlying capacity.
     fn default() -> Self {
         Self {
             keys: Vec::with_capacity(Self::N_MAX_KEYS),
@@ -65,10 +70,11 @@ impl<K: Copy + Ord, const B: usize> Node<K, B> {
     /// The new median key and sibling.
     fn split_off(&mut self) -> (K, Self) {
         // The sibling will take half of my keys and children:
-        let sibling = Self {
-            keys: self.keys.split_off(B),
-            children: self.children.split_off(B),
-        };
+        let mut sibling = Self::default();
+        sibling.keys.extend(self.keys.drain(B..));
+        if !self.is_leaf() {
+            sibling.children.extend(self.children.drain(B..));
+        }
 
         // Return the median and the newly created sibling, so that we could link them to the parent:
         let median_key = self.keys.pop().unwrap();
@@ -133,12 +139,23 @@ mod tests {
     fn insert_ok() {
         let mut set = Multiset::<_, 1>::default();
 
+        // First element:
         set.insert(42);
         assert_eq!(set.0.keys, [42]);
-        assert!(set.0.children.is_empty());
+        assert!(set.0.is_leaf());
 
+        // Here, a split should occur:
         set.insert(43);
-        assert_eq!(set.0.keys, [42, 43]);
-        assert!(set.0.children.is_empty());
+        assert_eq!(set.0.keys, [42]);
+        assert_eq!(set.0.children[0].keys, []);
+        assert!(set.0.children[0].is_leaf());
+        assert_eq!(set.0.children[1].keys, [43]);
+        assert!(set.0.children[1].is_leaf());
+
+        // No split, just insert to the left child:
+        set.insert(42);
+        assert_eq!(set.0.keys, [42]);
+        assert_eq!(set.0.children[0].keys, [42]);
+        assert_eq!(set.0.children[1].keys, [43]);
     }
 }
