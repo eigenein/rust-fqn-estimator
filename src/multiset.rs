@@ -43,11 +43,16 @@ struct Node<K, const B: usize> {
     children: Vec<Self>,
 }
 
+impl<K, const B: usize> Node<K, B> {
+    const N_MAX_CHILDREN: usize = 2 * B;
+    const N_MAX_KEYS: usize = 2 * B - 1;
+}
+
 impl<K, const B: usize> Default for Node<K, B> {
     fn default() -> Self {
         Self {
-            keys: Vec::with_capacity(2 * B - 1),
-            children: Vec::with_capacity(2 * B),
+            keys: Vec::with_capacity(Self::N_MAX_KEYS),
+            children: Vec::with_capacity(Self::N_MAX_CHILDREN),
         }
     }
 }
@@ -78,7 +83,7 @@ impl<K: Copy + Ord, const B: usize> Node<K, B> {
 
     #[must_use]
     fn is_full(&self) -> bool {
-        self.keys.len() == 2 * B - 1
+        self.keys.len() == Self::N_MAX_KEYS
     }
 
     /// Insert the key to the node.
