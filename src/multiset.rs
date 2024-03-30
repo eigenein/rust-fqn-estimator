@@ -142,6 +142,8 @@ impl<K, const B: usize> std::ops::Index<usize> for Node<K, B> {
 mod tests {
     use super::*;
 
+    /// Tested with <https://www.cs.usfca.edu/~galles/visualization/BTree.html>
+    /// (max degree is 4, preemptive split is on).
     #[test]
     fn insert_ok() {
         let mut set = Multiset::<_, 2>::default();
@@ -173,6 +175,16 @@ mod tests {
         set.insert(3);
         assert_eq!(set.0.keys, [5, 7]);
         assert_eq!(set.0[0].keys, [3, 4]);
+        assert!(set.0[0].is_leaf());
+        assert_eq!(set.0[1].keys, [6]);
+        assert!(set.0[1].is_leaf());
+        assert_eq!(set.0[2].keys, [8]);
+        assert!(set.0[2].is_leaf());
+
+        // Insert duplicate:
+        set.insert(3);
+        assert_eq!(set.0.keys, [5, 7]);
+        assert_eq!(set.0[0].keys, [3, 3, 4]);
         assert!(set.0[0].is_leaf());
         assert_eq!(set.0[1].keys, [6]);
         assert!(set.0[1].is_leaf());
