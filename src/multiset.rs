@@ -28,12 +28,10 @@ impl<K: Copy + Ord, const B: usize> Multiset<K, B> {
             let (median, sibling) = self.0.split_off();
 
             // The former root becomes a child of the new root:
-            self.0 = Node {
-                keys: vec![median],
-
-                // FIXME: I don't like the temporary allocation here.
-                children: vec![mem::take(&mut self.0), sibling],
-            };
+            let former_root = mem::take(&mut self.0);
+            self.0.keys.push(median);
+            self.0.children.push(former_root);
+            self.0.children.push(sibling);
         }
 
         self.0.insert(key);
