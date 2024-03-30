@@ -9,6 +9,7 @@ use crate::{
 /// Main result of this module: select _k_-th order statistic of the virtual `X + (-X)` matrix.
 ///
 /// **Note, that `k` starts from `1`.**
+#[must_use]
 fn select_kth_statistic<V, I>(window: I, k: usize) -> V
 where
     V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
@@ -25,6 +26,7 @@ where
 /// Tuple of the `k1`-th and `k2`-th elements of the matrix derived from `window` and negated `window`.
 ///
 /// P.S. Abandon hope all ye who enter here 💀
+#[must_use]
 fn binary_select<V, I>(
     full_window: I,
     k1: usize,
@@ -100,6 +102,7 @@ where
 }
 
 /// Convenience function to deduplicate the final selection in [`binary_select`].
+#[must_use]
 fn select_statistic<V, I>(
     window: &mut Option<I>,
     (min_candidate, rank_min): (V, usize),
@@ -128,6 +131,7 @@ where
 }
 
 /// Handle the trivial case of a 2-window (the recursion basis for [`binary_select`]).
+#[must_use]
 fn select_trivial<V, I>(mut window: I, k: usize) -> V
 where
     I: Clone + ExactSizeIterator<Item = V>,
@@ -149,6 +153,7 @@ where
 /// # Panics
 ///
 /// The two elements in `L` cannot be ordered.
+#[must_use]
 fn select_nth<V>(l: &mut [V], index: usize) -> V
 where
     V: Copy + Debug + PartialOrd,

@@ -22,6 +22,7 @@ use std::ops::Sub;
 /// Calculate `rank+(A, a)` from the original papers, that is number of elements greater than `guard`.
 ///
 /// Also known as `rank+` in the original papers, and `rankRightV` in the reference implementation.
+#[must_use]
 pub fn n_greater<V, I>(window: I, guard: V) -> usize
 where
     V: Copy + PartialOrd<V> + Sub<V, Output = V>,
@@ -45,6 +46,7 @@ where
 }
 
 /// Calculate `rank-(A, a)`, that is number of elements less than `guard`.
+#[must_use]
 pub fn n_smaller<V, I>(window: I, guard: V) -> usize
 where
     V: Copy + PartialOrd<V> + Sub<V, Output = V>,

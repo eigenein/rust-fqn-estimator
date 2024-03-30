@@ -2,6 +2,7 @@
 ///
 /// Step is a multiple of `2` and corresponds to the [`crate::select::bi_select`] call depth.
 #[derive(Copy, Clone)]
+#[must_use]
 pub struct DashIter<V, I> {
     inner: I,
     step: usize,
