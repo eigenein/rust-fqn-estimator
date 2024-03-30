@@ -48,10 +48,21 @@ struct Node<K, const B: usize> {
 impl<K, const B: usize> Node<K, B> {
     const N_MAX_CHILDREN: usize = 2 * B;
     const N_MAX_KEYS: usize = 2 * B - 1;
+
+    #[must_use]
+    fn is_leaf(&self) -> bool {
+        self.children.is_empty()
+    }
+
+    #[must_use]
+    fn is_full(&self) -> bool {
+        self.keys.len() == Self::N_MAX_KEYS
+    }
 }
 
 impl<K, const B: usize> Default for Node<K, B> {
-    /// Build an empty leaf and ensure its underlying capacity.
+    /// Build an empty leaf and ensure its underlying capacity,
+    /// **never build a node directly**.
     fn default() -> Self {
         Self {
             keys: Vec::with_capacity(Self::N_MAX_KEYS),
@@ -60,6 +71,7 @@ impl<K, const B: usize> Default for Node<K, B> {
     }
 }
 
+/// Insertion.
 impl<K: Copy + Ord, const B: usize> Node<K, B> {
     /// Split the node.
     ///
@@ -78,16 +90,6 @@ impl<K: Copy + Ord, const B: usize> Node<K, B> {
         let median_key = self.keys.pop().unwrap();
 
         (median_key, sibling)
-    }
-
-    #[must_use]
-    fn is_leaf(&self) -> bool {
-        self.children.is_empty()
-    }
-
-    #[must_use]
-    fn is_full(&self) -> bool {
-        self.keys.len() == Self::N_MAX_KEYS
     }
 
     /// Insert the key to the node.
@@ -145,6 +147,7 @@ mod tests {
     /// Tested with <https://www.cs.usfca.edu/~galles/visualization/BTree.html>
     /// (max degree is 4, preemptive split is on).
     #[test]
+    #[allow(clippy::cognitive_complexity)]
     fn insert_ok() {
         let mut set = Multiset::<_, 2>::default();
 
