@@ -1,4 +1,4 @@
-use std::{fmt::Debug, ops::Sub};
+use std::{collections::VecDeque, fmt::Debug, ops::Sub};
 
 use crate::{
     scale::ScaleEstimate,
@@ -18,7 +18,7 @@ impl<T> QnScaleEstimator<T> {
     /// Create a new estimator with the specified window length.
     pub fn new(window_len: usize) -> Self {
         Self {
-            chronological: Window::with_capacity(window_len),
+            chronological: Window(VecDeque::with_capacity(window_len)),
             sorted: SortedVec(Vec::with_capacity(window_len)),
         }
     }
@@ -42,6 +42,9 @@ impl<T: Copy + PartialEq + PartialOrd> QnScaleEstimator<T> {
 
         // And now, insert the upcoming value into the sorted vector:
         self.sorted.insert_sorted(value);
+
+        debug_assert_eq!(self.sorted.0.capacity(), self.chronological.0.capacity());
+        debug_assert_eq!(self.sorted.0.len(), self.chronological.0.len());
     }
 
     /// Push multiple values to the estimator.
@@ -69,5 +72,24 @@ impl<T: Copy + Debug + Default + PartialOrd + Sub<T, Output = T>> QnScaleEstimat
             n_samples: n,
             statistic: select_kth_statistic(self.sorted.0.iter().copied(), k),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::QnScaleEstimator;
+
+    #[test]
+    fn window_overflow_ok() {
+        let samples = [
+            2, 78, 1, 4, 19, 37, 68, 91, 42, 42, 75, 40, 4, 18, 18, 77, 9, 78, 57, 99,
+        ];
+
+        let mut estimator = QnScaleEstimator::new(10);
+        estimator.extend(samples);
+
+        let scale = estimator.scale();
+        assert_eq!(scale.n_samples, 10);
+        assert_eq!(scale.statistic, 22);
     }
 }
