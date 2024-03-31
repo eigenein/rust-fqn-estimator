@@ -33,8 +33,7 @@ impl<T: PartialOrd> SortedVec<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::RawMedian;
-    use crate::sorted_vec::SortedVec;
+    use crate::{sorted_vec::SortedVec, RawMedian};
 
     #[test]
     fn empty_ok() {
@@ -43,11 +42,17 @@ mod tests {
 
     #[test]
     fn odd_ok() {
-        assert_eq!(SortedVec(vec![1, 2, 3, 4, 5]).median(), Some(RawMedian::Odd(3)));
+        assert_eq!(
+            SortedVec(vec![1, 2, 3, 4, 5]).median(),
+            Some(RawMedian::Odd(3))
+        );
     }
 
     #[test]
     fn even_ok() {
-        assert_eq!(SortedVec(vec![1, 2, 3, 4, 5, 6]).median(), Some(RawMedian::Even(3, 4)));
+        assert_eq!(
+            SortedVec(vec![1, 2, 3, 4, 5, 6]).median(),
+            Some(RawMedian::Even(3, 4))
+        );
     }
 }
