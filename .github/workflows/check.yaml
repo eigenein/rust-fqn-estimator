@@ -36,14 +36,16 @@ jobs:
         uses: taiki-e/install-action@cargo-llvm-cov
 
       - name: 🧪 Test
-        run: cargo llvm-cov --all-features --workspace --codecov --output-path=codecov.json
+        run: |
+          cargo llvm-cov --all-features --workspace --codecov --output-path=codecov.json
+          cargo llvm-cov --doc --codecov --output-path=codecov-doctests.json 
 
       - name: 📤 Upload coverage
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: codecov.json
+          files: codecov.json,codecov-doctests.json
 
       - name: 💬 Clippy
         uses: giraffate/clippy-action@v1

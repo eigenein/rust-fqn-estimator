@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 mod dash_iter;
 mod estimator;
 mod median;

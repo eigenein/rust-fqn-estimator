@@ -71,27 +71,3 @@ impl<T: Copy + Debug + Default + PartialOrd + Sub<T, Output = T>> QnScaleEstimat
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::QnScaleEstimator;
-
-    #[test]
-    fn random_100_samples_ok() {
-        let samples = [
-            257, 917, 236, 271, 339, 19, 994, 710, 411, 922, 516, 329, 405, 112, 980, 308, 918, 83,
-            116, 122, 329, 227, 541, 774, 455, 706, 151, 829, 463, 763, 453, 218, 872, 326, 162,
-            607, 689, 672, 56, 997, 598, 920, 817, 949, 155, 688, 755, 721, 430, 184, 314, 308,
-            709, 626, 333, 307, 63, 473, 594, 366, 687, 463, 46, 994, 948, 392, 431, 171, 413, 975,
-            126, 975, 337, 49, 196, 463, 784, 722, 522, 182, 919, 181, 120, 177, 131, 612, 5, 952,
-            663, 628, 648, 238, 845, 354, 223, 315, 985, 38, 2, 34,
-        ];
-
-        let mut estimator = QnScaleEstimator::new(samples.len());
-        estimator.extend(samples);
-
-        let scale = estimator.scale();
-        assert_eq!(scale.n_samples, samples.len());
-        assert_eq!(scale.statistic, 145);
-    }
-}
