@@ -11,6 +11,10 @@ readme = "README.md"
 repository = "https://github.com/eigenein/rust-fqn-estimator"
 version = "0.0.1"
 
+[features]
+default = ["num-traits"]
+num-traits = ["dep:num-traits"]
+
 [lib]
 
 [profile.dev]
@@ -32,3 +36,4 @@ pedantic = "warn"
 module_name_repetitions = "allow"
 
 [dependencies]
+num-traits = { version = "0.2.18", optional = true }

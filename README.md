@@ -40,3 +40,7 @@ fn main() {
     assert_eq!(scale.statistic, 145);
 }
 ```
+
+## Features
+
+- `num-traits`: use [`num-traits`](https://crates.io/crates/num-traits) to enable median for even-sized samples and $`Q_n`$ scale consistency coefficients[^4]

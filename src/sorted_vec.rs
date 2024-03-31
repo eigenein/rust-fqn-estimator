@@ -1,5 +1,21 @@
+use crate::RawMedian;
+
 #[must_use]
 pub struct SortedVec<T>(pub Vec<T>);
+
+impl<T: Copy> SortedVec<T> {
+    /// Get the vector median.
+    pub fn median(&self) -> Option<RawMedian<T>> {
+        if self.0.is_empty() {
+            None
+        } else if self.0.len() & 1 == 1 {
+            Some(RawMedian::Odd(self.0[self.0.len() / 2]))
+        } else {
+            let i = self.0.len() / 2;
+            Some(RawMedian::Even(self.0[i - 1], self.0[i]))
+        }
+    }
+}
 
 impl<T: PartialOrd> SortedVec<T> {
     pub fn insert_sorted(&mut self, value: T) {
@@ -12,5 +28,26 @@ impl<T: PartialOrd> SortedVec<T> {
             .iter()
             .rposition(|existing_value| existing_value == value)
             .map(|index| self.0.remove(index))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::RawMedian;
+    use crate::sorted_vec::SortedVec;
+
+    #[test]
+    fn empty_ok() {
+        assert_eq!(SortedVec::<()>(vec![]).median(), None);
+    }
+
+    #[test]
+    fn odd_ok() {
+        assert_eq!(SortedVec(vec![1, 2, 3, 4, 5]).median(), Some(RawMedian::Odd(3)));
+    }
+
+    #[test]
+    fn even_ok() {
+        assert_eq!(SortedVec(vec![1, 2, 3, 4, 5, 6]).median(), Some(RawMedian::Even(3, 4)));
     }
 }
