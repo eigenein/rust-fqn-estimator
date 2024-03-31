@@ -10,12 +10,16 @@ use crate::{
 ///
 /// **Note, that `k` starts from `1`.**
 #[must_use]
-fn select_kth_statistic<V, I>(window: I, k: usize) -> V
+pub fn select_kth_statistic<V, I>(window: I, k: usize) -> V
 where
     V: Copy + Debug + Default + PartialOrd + Sub<V, Output = V>,
     I: Clone + ExactSizeIterator<Item = V>,
 {
-    debug_assert!(k >= 1, "Here, kth order statistic starts at 1");
+    debug_assert!(
+        (1..=window.len().pow(2)).contains(&k),
+        "window len: {}, k: {k}",
+        window.len(),
+    );
 
     // Starting with unit step, meaning the full window.
     binary_select::<V, I>(window, k, k, 1, Vec::new()).0

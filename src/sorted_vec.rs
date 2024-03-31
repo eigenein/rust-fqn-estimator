@@ -1,3 +1,4 @@
+#[must_use]
 pub struct SortedVec<T>(pub Vec<T>);
 
 impl<T: PartialOrd> SortedVec<T> {

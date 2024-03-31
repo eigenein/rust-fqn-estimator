@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 
+#[must_use]
 pub struct Window<T>(VecDeque<T>);
 
 impl<T> Window<T> {
