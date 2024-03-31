@@ -6,7 +6,7 @@ use crate::{
     rank::{n_greater, n_smaller},
 };
 
-/// Main result of this module: select _k_-th order statistic of the virtual `X + (-X)` matrix.
+/// The heart of the estimator: select _k_-th order statistic of the virtual `X + (-X)` matrix.
 ///
 /// **Note, that `k` starts from `1`.**
 #[must_use]
