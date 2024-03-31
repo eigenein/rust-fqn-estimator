@@ -1,5 +1,5 @@
 /// Calculated Qn estimate of scale.
-#[derive(Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct ScaleEstimate<T> {
     /// Number of samples.
     pub n_samples: usize,

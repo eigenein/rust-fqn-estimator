@@ -35,7 +35,7 @@ fn main() {
     let mut estimator = QnScaleEstimator::new(samples.len());
     estimator.extend(samples);
 
-    let scale = estimator.scale();
+    let scale = estimator.scale().unwrap();
     assert_eq!(scale.n_samples, samples.len());
     assert_eq!(scale.statistic, 145);
 }

@@ -59,25 +59,49 @@ impl<T: Copy + Debug + Default + PartialOrd + Sub<T, Output = T>> QnScaleEstimat
     /// Calculate the estimate of scale.
     ///
     /// This is a linear-time operation.
+    ///
+    /// # Returns
+    ///
+    /// Qn estimate of scale, or [`None`] if the sample contains less than 2 samples.
     #[must_use = "calculating the scale without using it makes no sense"]
-    pub fn scale(&self) -> ScaleEstimate<T> {
+    pub fn scale(&self) -> Option<ScaleEstimate<T>> {
         let n = self.sorted.0.len();
+        if n == 0 {
+            return None;
+        }
         let h = n / 2 + 1;
         let k =
             // From original Qn estimator:
             h * (h - 1) / 2
             // Offset to express the original statistic in terms of the `X + (-X)` statistic:
             + n + n * (n - 1) / 2;
-        ScaleEstimate {
+        Some(ScaleEstimate {
             n_samples: n,
             statistic: select_kth_statistic(self.sorted.0.iter().copied(), k),
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::QnScaleEstimator;
+
+    #[test]
+    fn empty_ok() {
+        let estimator = QnScaleEstimator::<i32>::new(1);
+        assert_eq!(estimator.scale(), None);
+    }
+
+    #[test]
+    fn two_samples_ok() {
+        let mut estimator = QnScaleEstimator::<i32>::new(2);
+        estimator.push(1);
+        estimator.push(2);
+
+        let scale = estimator.scale().unwrap();
+        assert_eq!(scale.n_samples, 2);
+        assert_eq!(scale.statistic, 1);
+    }
 
     #[test]
     fn window_overflow_ok() {
@@ -88,7 +112,7 @@ mod tests {
         let mut estimator = QnScaleEstimator::new(10);
         estimator.extend(samples);
 
-        let scale = estimator.scale();
+        let scale = estimator.scale().unwrap();
         assert_eq!(scale.n_samples, 10);
         assert_eq!(scale.statistic, 22);
     }
