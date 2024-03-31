@@ -5,6 +5,7 @@ use crate::{
     select::select_kth_statistic,
     sorted_vec::SortedVec,
     window::Window,
+    RawMedian,
 };
 
 /// `Qn` estimator of scale.
@@ -79,6 +80,20 @@ impl<T: Copy + Debug + Default + PartialOrd + Sub<T, Output = T>> QnScaleEstimat
             n_samples: n,
             statistic: select_kth_statistic(self.sorted.0.iter().copied(), k),
         })
+    }
+}
+
+impl<T: Copy> QnScaleEstimator<T> {
+    /// Obtain the sample median.
+    ///
+    /// This is a constant-time operation.
+    ///
+    /// # Returns
+    ///
+    /// The sample median, or [`None`] – if the sample is empty.
+    #[must_use]
+    pub fn median(&self) -> Option<RawMedian<T>> {
+        self.sorted.median()
     }
 }
 

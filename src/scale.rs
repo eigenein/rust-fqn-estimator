@@ -16,7 +16,7 @@ impl ScaleEstimate<f64> {
 
     /// Calculate the corrected scale estimate.
     #[must_use]
-    pub fn scale(&self) -> f64 {
+    pub fn to_f64(&self) -> f64 {
         #[allow(clippy::cast_precision_loss)]
         let n = self.n_samples as f64;
 

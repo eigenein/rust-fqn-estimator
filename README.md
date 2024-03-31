@@ -38,8 +38,11 @@ fn main() {
     let mut estimator = QnScaleEstimator::new(samples.len());
     estimator.extend(samples);
 
-    let scale = estimator.estimate().unwrap().scale();
+    let scale = estimator.estimate().unwrap().to_f64();
     assert!(310.31 < scale && scale < 310.32);
+    
+    let median = estimator.median().unwrap().to_median();
+    assert!(430.49 < median && median < 431.51);
 }
 ```
 
