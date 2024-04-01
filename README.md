@@ -2,6 +2,8 @@
 
 Rust implementation of the rolling «Fast $`Q_n`$» algorithm for data streams.
 
+[![Documentation](https://img.shields.io/docsrs/fqn-estimator?style=for-the-badge)
+](https://docs.rs/fqn-estimator)
 [![Check status](https://img.shields.io/github/actions/workflow/status/eigenein/rust-fqn-estimator/check.yaml?style=for-the-badge)]((https://github.com/eigenein/rust-fqn-estimator/actions/workflows/check.yaml))
 [![Code coverage](https://img.shields.io/codecov/c/github/eigenein/rust-fqn-estimator?style=for-the-badge)
 ](https://app.codecov.io/gh/eigenein/rust-fqn-estimator)
