@@ -2,6 +2,7 @@
 authors = ["Pavel Perestoronin <eigenein@gmail.com>"]
 categories = ["algorithms", "mathematics", "science"]
 description = "Fast online Qn scale estimator in Rust"
+documentation = "https://docs.rs/fqn-estimator"
 edition = "2021"
 keywords = ["qn", "estimator", "statistics"]
 license-file = "LICENSE"

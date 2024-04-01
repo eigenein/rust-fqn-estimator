@@ -7,6 +7,7 @@ Rust implementation of the rolling «Fast $`Q_n`$» algorithm for data streams.
 [![Check status](https://img.shields.io/github/actions/workflow/status/eigenein/rust-fqn-estimator/check.yaml?style=for-the-badge)]((https://github.com/eigenein/rust-fqn-estimator/actions/workflows/check.yaml))
 [![Code coverage](https://img.shields.io/codecov/c/github/eigenein/rust-fqn-estimator?style=for-the-badge)
 ](https://app.codecov.io/gh/eigenein/rust-fqn-estimator)
+![Maintenance](https://img.shields.io/maintenance/yes/2024?style=for-the-badge)
 
 The $`k`$th order statistic retrieval from the pairwise differences is based on the paper[^1] of A. Mirzaian and E. Arjomandi, adapting the implementation[^2] from M. Cafaro and others[^3].
 
