@@ -40,7 +40,7 @@ fn main() {
     let mut estimator = QnScaleEstimator::new(samples.len());
     estimator.extend(samples);
 
-    let scale = estimator.estimate().unwrap().to_f64();
+    let scale: f64 = estimator.estimate().unwrap().into();
     assert!(310.31 < scale && scale < 310.32);
     
     let median = estimator.median().unwrap().to_median();

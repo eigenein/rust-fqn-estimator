@@ -1,5 +1,5 @@
 /// Calculated Qn estimate of scale.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct ScaleEstimate<T> {
     /// Number of samples.
     pub n_samples: usize,
@@ -7,16 +7,12 @@ pub struct ScaleEstimate<T> {
     /// The original statistic.
     ///
     /// It needs to be multiplied by the scaling coefficients before it may be considered
-    /// a «real scale». See the implementations for concrete [`T`].
+    /// an «actual scale». See the implementations for concrete `T`.
     pub statistic: T,
 }
 
-impl ScaleEstimate<f64> {
-    const DN: f64 = 2.219_144_465_985_08;
-
-    /// Calculate the corrected scale estimate.
-    #[must_use]
-    pub fn to_f64(&self) -> f64 {
+impl<T: TryInto<f64>> ScaleEstimate<T> {
+    fn normalization_constant(&self) -> f64 {
         #[allow(clippy::cast_precision_loss)]
         let n = self.n_samples as f64;
 
@@ -25,6 +21,15 @@ impl ScaleEstimate<f64> {
         } else {
             1.0 - 3.672 / n + 11.087 / n.powi(2)
         };
-        self.statistic * Self::DN * dn
+
+        2.219_144_465_985_08 * dn
+    }
+}
+
+impl<T: Into<Self>> From<ScaleEstimate<T>> for f64 {
+    /// Calculate the actual scale estimate, that is the statistic multiplied by
+    /// the normalization constant.
+    fn from(estimate: ScaleEstimate<T>) -> Self {
+        estimate.normalization_constant() * estimate.statistic.into()
     }
 }
