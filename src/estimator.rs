@@ -69,22 +69,29 @@ impl<T: Copy + Debug + Default + PartialOrd + Sub<T, Output = T>> QnScaleEstimat
     ///
     /// # Returns
     ///
-    /// Qn estimate of scale, or [`None`] if the sample contains less than 2 samples.
+    /// Qn estimate of scale, or [`None`] if the sample contains no samples.
     #[must_use = "calculating the scale without using it makes no sense"]
     pub fn estimate(&self) -> Option<ScaleEstimate<T>> {
         let n = self.sorted.0.len();
         if n == 0 {
             return None;
         }
-        let h = n / 2 + 1;
-        let k =
+
+        let statistic = if n == 1 {
+            T::default()
+        } else {
+            let h = n / 2 + 1;
+            let k =
             // From original Qn estimator:
             h * (h - 1) / 2
             // Offset to express the original statistic in terms of the `X + (-X)` statistic:
             + n + n * (n - 1) / 2;
+            select_kth_statistic(self.sorted.0.iter().copied(), k)
+        };
+
         Some(ScaleEstimate {
             n_samples: n,
-            statistic: select_kth_statistic(self.sorted.0.iter().copied(), k),
+            statistic,
         })
     }
 }
@@ -111,6 +118,16 @@ mod tests {
     fn empty_ok() {
         let estimator = QnScaleEstimator::<i32>::new(1);
         assert_eq!(estimator.estimate(), None);
+    }
+
+    #[test]
+    fn one_sample_ok() {
+        let mut estimator = QnScaleEstimator::<i32>::new(1);
+        estimator.push(1);
+
+        let scale = estimator.estimate().unwrap();
+        assert_eq!(scale.n_samples, 1);
+        assert_eq!(scale.statistic, 0);
     }
 
     #[test]
