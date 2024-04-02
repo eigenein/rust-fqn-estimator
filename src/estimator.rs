@@ -23,6 +23,12 @@ impl<T> QnScaleEstimator<T> {
             sorted: SortedVec(Vec::with_capacity(window_len)),
         }
     }
+
+    /// Clear the current sample window.
+    pub fn clear(&mut self) {
+        self.chronological.0.clear();
+        self.sorted.0.clear();
+    }
 }
 
 impl<T: Copy + PartialEq + PartialOrd> QnScaleEstimator<T> {
