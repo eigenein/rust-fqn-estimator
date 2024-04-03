@@ -38,3 +38,11 @@ module_name_repetitions = "allow"
 
 [dependencies]
 num-traits = { version = "0.2.18", optional = true }
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["html_reports"] }
+fastrand = "2.0.2"
+
+[[bench]]
+name = "fqn_estimator"
+harness = false

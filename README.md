@@ -52,3 +52,11 @@ fn main() {
 ## Features
 
 - `num-traits`: use [`num-traits`](https://crates.io/crates/num-traits) to enable median for even-sized samples
+
+## Benchmarks (MacBook M1 Pro)
+
+| Samples | `estimate()` time |
+| ------- | ----------------- |
+| 1000    | 48.227 µs         |
+| 10000   | 627.56 µs         |
+| 1000000 | 66.103 ms         |
