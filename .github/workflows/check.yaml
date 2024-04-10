@@ -47,6 +47,8 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: codecov.json,codecov-doctests.json
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: 💬 Clippy
         uses: giraffate/clippy-action@v1
