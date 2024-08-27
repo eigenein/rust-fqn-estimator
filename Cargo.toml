@@ -40,7 +40,7 @@ module_name_repetitions = "allow"
 num-traits = { version = "0.2.18", optional = true }
 
 [dev-dependencies]
-criterion = { version = "0.4", features = ["html_reports"] }
+criterion = { version = "0.5", features = ["html_reports"] }
 fastrand = "2.0.2"
 
 [[bench]]
