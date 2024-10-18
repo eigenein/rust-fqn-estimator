@@ -219,10 +219,9 @@ mod tests {
         let statistics: Vec<_> = (1..=16)
             .map(|k| select_kth_statistic(window.clone(), k))
             .collect();
-        assert_eq!(
-            statistics,
-            [-3, -2, -2, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3]
-        );
+        assert_eq!(statistics, [
+            -3, -2, -2, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3
+        ]);
     }
 
     /// # Matrix
@@ -240,11 +239,8 @@ mod tests {
         let statistics: Vec<_> = (1..=25)
             .map(|k| select_kth_statistic(window.clone(), k))
             .collect();
-        assert_eq!(
-            statistics,
-            [
-                -4, -3, -3, -2, -2, -2, -1, -1, -1, -1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4
-            ]
-        );
+        assert_eq!(statistics, [
+            -4, -3, -3, -2, -2, -2, -1, -1, -1, -1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4
+        ]);
     }
 }

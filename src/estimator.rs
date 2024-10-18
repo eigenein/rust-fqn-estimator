@@ -1,11 +1,11 @@
 use std::{collections::VecDeque, fmt::Debug, ops::Sub};
 
 use crate::{
+    RawMedian,
     scale::ScaleEstimate,
     select::select_kth_statistic,
     sorted_vec::SortedVec,
     window::Window,
-    RawMedian,
 };
 
 /// `Qn` estimator of scale.

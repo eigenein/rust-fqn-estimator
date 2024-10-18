@@ -33,7 +33,7 @@ impl<T: PartialOrd> SortedVec<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{sorted_vec::SortedVec, RawMedian};
+    use crate::{RawMedian, sorted_vec::SortedVec};
 
     #[test]
     fn empty_ok() {

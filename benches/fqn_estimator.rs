@@ -1,4 +1,4 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 use fastrand::Rng;
 use fqn_estimator::QnScaleEstimator;
 
@@ -35,5 +35,10 @@ fn bench_1_000_000_samples(criterion: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_1000_samples, bench_10_000_samples, bench_1_000_000_samples);
+criterion_group!(
+    benches,
+    bench_1000_samples,
+    bench_10_000_samples,
+    bench_1_000_000_samples
+);
 criterion_main!(benches);
